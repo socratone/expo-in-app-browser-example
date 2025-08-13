@@ -1,112 +1,25 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
 
-// 메인 라우트 - 간단한 HTML 페이지 제공
+// 메인 라우트 - index.html 파일을 불러와서 제공
 app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>간단한 HTML 서버</title>
-        <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 2rem;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                min-height: 100vh;
-                color: white;
-            }
-            .container {
-                background: rgba(255, 255, 255, 0.1);
-                padding: 2rem;
-                border-radius: 15px;
-                backdrop-filter: blur(10px);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            }
-            h1 {
-                text-align: center;
-                margin-bottom: 2rem;
-                font-size: 2.5rem;
-            }
-            .info-card {
-                background: rgba(255, 255, 255, 0.1);
-                padding: 1.5rem;
-                border-radius: 10px;
-                margin: 1rem 0;
-                border-left: 4px solid #4CAF50;
-            }
-            .button {
-                display: inline-block;
-                background: #4CAF50;
-                color: white;
-                padding: 12px 24px;
-                text-decoration: none;
-                border-radius: 6px;
-                margin: 10px;
-                transition: background 0.3s;
-            }
-            .button:hover {
-                background: #45a049;
-            }
-            .time {
-                text-align: center;
-                font-size: 1.2rem;
-                margin-top: 2rem;
-                opacity: 0.8;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>🚀 Node.js 서버가 실행 중입니다!</h1>
-            
-            <div class="info-card">
-                <h3>서버 정보</h3>
-                <p><strong>포트:</strong> ${PORT}</p>
-                <p><strong>URL:</strong> http://localhost:${PORT}</p>
-                <p><strong>상태:</strong> 정상 작동 중 ✅</p>
-            </div>
+  try {
+    // index.html 파일을 읽어옴
+    const htmlPath = path.join(process.cwd(), 'server', 'index.html');
+    let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-            <div class="info-card">
-                <h3>테스트 링크</h3>
-                <a href="/api/test" class="button">API 테스트</a>
-                <a href="/about" class="button">About 페이지</a>
-            </div>
+    // 템플릿 변수 치환 (${PORT}를 실제 포트 번호로 변경)
+    htmlContent = htmlContent.replace(/\$\{PORT\}/g, PORT);
 
-            <div class="time">
-                현재 시간: <span id="currentTime"></span>
-            </div>
-        </div>
-
-        <script>
-            // 실시간 시간 업데이트
-            function updateTime() {
-                const now = new Date();
-                document.getElementById('currentTime').textContent = now.toLocaleString('ko-KR');
-            }
-            
-            updateTime();
-            setInterval(updateTime, 1000);
-        </script>
-    </body>
-    </html>
-  `);
-});
-
-// API 테스트 엔드포인트
-app.get('/api/test', (req, res) => {
-  res.json({
-    message: '서버가 정상적으로 작동하고 있습니다!',
-    timestamp: new Date().toISOString(),
-    status: 'success'
-  });
+    res.send(htmlContent);
+  } catch (error) {
+    console.error('index.html 파일을 읽는 중 오류 발생:', error);
+    res.status(500).send('서버 오류가 발생했습니다.');
+  }
 });
 
 // About 페이지
