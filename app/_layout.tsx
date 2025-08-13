@@ -1,8 +1,12 @@
-import React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
+
+/** 로컬 IP 변경 필요 */
+const IP = 'http://192.168.0.29';
+const URL = `${IP}:3000`;
 
 export default function App() {
   const colorScheme = useColorScheme();
@@ -11,7 +15,7 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <WebView
-        source={{ uri: 'https://www.google.com' }} // 기본 URL, 필요에 따라 변경
+        source={{ uri: URL }}
         style={styles.webview}
         javaScriptEnabled={true}
         domStorageEnabled={true}
